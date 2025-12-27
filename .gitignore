@@ -1,0 +1,16 @@
+# Don't push data or environments
+data/
+.venv/
+venv/
+
+# Jupyter + python
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+
+# Models/artifacts
+models/
+
+# Editor/OS
+.vscode/
+.DS_Store
