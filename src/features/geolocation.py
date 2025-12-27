@@ -47,17 +47,14 @@ def merge_ip_country(
     df_merged['ip_int'] = df_merged[ip_col].apply(ip_to_integer)
 
     # Ensure IP country data has integer ranges
-    if 'lower_bound_ip_address' in ip_country_df.columns and 'upper_bound_ip_address' in ip_country_df.columns:
-        # Already in integer format
-        ip_ranges = ip_country_df.copy()
-    else:
-        # Need to convert
-        logger.info("Converting IP range bounds to integers...")
-        ip_ranges = ip_country_df.copy()
-        if 'lower_bound_ip_address' in ip_ranges.columns:
-            ip_ranges['lower_bound_ip_address'] = ip_ranges['lower_bound_ip_address'].astype(int)
-        if 'upper_bound_ip_address' in ip_ranges.columns:
-            ip_ranges['upper_bound_ip_address'] = ip_ranges['upper_bound_ip_address'].astype(int)
+    ip_ranges = ip_country_df.copy()
+    if 'lower_bound_ip_address' in ip_ranges.columns:
+        ip_ranges['lower_bound_ip_address'] = ip_ranges['lower_bound_ip_address'].astype('int64')
+    if 'upper_bound_ip_address' in ip_ranges.columns:
+        ip_ranges['upper_bound_ip_address'] = ip_ranges['upper_bound_ip_address'].astype('int64')
+
+    # Convert ip_int in df_merged as well just to be certain
+    df_merged['ip_int'] = df_merged['ip_int'].astype('int64')
 
     # Perform range-based merge using merge_asof
     logger.info("Performing range-based IP lookup...")
@@ -104,8 +101,29 @@ def analyze_fraud_by_country(df: pd.DataFrame, country_col: str = 'country', fra
     """
     logger.info("Analyzing fraud patterns by country...")
 
+    # Check if columns exist
+    if country_col not in df.columns:
+        error_msg = f"Country column '{country_col}' not found in DataFrame. Available columns: {df.columns.tolist()}"
+        logger.error(error_msg)
+        print(f"DEBUG ERROR: {error_msg}")
+        return pd.DataFrame()
+
+    actual_fraud_col = fraud_col
+    if actual_fraud_col not in df.columns:
+        # Check for case-insensitive match
+        for c in df.columns:
+            if c.lower() == fraud_col.lower():
+                actual_fraud_col = c
+                break
+
+    if actual_fraud_col not in df.columns:
+        error_msg = f"Fraud column '{fraud_col}' not found in DataFrame. Available columns: {df.columns.tolist()}"
+        logger.error(error_msg)
+        print(f"DEBUG ERROR: {error_msg}")
+        return pd.DataFrame()
+
     country_stats = df.groupby(country_col).agg({
-        fraud_col: ['count', 'sum', 'mean']
+        actual_fraud_col: ['count', 'sum', 'mean']
     }).reset_index()
 
     country_stats.columns = [country_col, 'total_transactions', 'fraud_count', 'fraud_rate']
