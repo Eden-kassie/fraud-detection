@@ -13,8 +13,8 @@ plt.rcParams['figure.figsize'] = (12, 6)
 
 def plot_univariate(
     df: pd.DataFrame,
-    column: str,
-    plot_type: str = "auto",
+    col: str,
+    kind: str = "auto",
     bins: int = 30,
     figsize: Tuple[int, int] = (10, 6)
 ) -> plt.Figure:
@@ -23,8 +23,8 @@ def plot_univariate(
 
     Args:
         df: Input DataFrame
-        column: Column name to plot
-        plot_type: Type of plot ('hist', 'box', 'auto')
+        col: Column name to plot
+        kind: Type of plot ('hist', 'box', 'count', 'auto')
         bins: Number of bins for histogram
         figsize: Figure size
 
@@ -33,25 +33,25 @@ def plot_univariate(
     """
     fig, ax = plt.subplots(figsize=figsize)
 
-    if plot_type == "auto":
+    if kind == "auto":
         # Determine plot type based on data type
-        if pd.api.types.is_numeric_dtype(df[column]):
-            plot_type = "hist"
+        if pd.api.types.is_numeric_dtype(df[col]):
+            kind = "hist"
         else:
-            plot_type = "count"
+            kind = "count"
 
-    if plot_type == "hist":
-        df[column].hist(bins=bins, ax=ax, edgecolor='black')
+    if kind == "hist":
+        df[col].hist(bins=bins, ax=ax, edgecolor='black')
         ax.set_ylabel('Frequency')
-    elif plot_type == "box":
-        df.boxplot(column=column, ax=ax)
-    elif plot_type == "count":
-        df[column].value_counts().plot(kind='bar', ax=ax)
+    elif kind == "box":
+        df.boxplot(column=col, ax=ax)
+    elif kind == "count":
+        df[col].value_counts().plot(kind='bar', ax=ax)
         ax.set_ylabel('Count')
         plt.xticks(rotation=45)
 
-    ax.set_title(f'Distribution of {column}')
-    ax.set_xlabel(column)
+    ax.set_title(f'Distribution of {col}')
+    ax.set_xlabel(col)
     plt.tight_layout()
 
     return fig
@@ -59,9 +59,9 @@ def plot_univariate(
 
 def plot_bivariate(
     df: pd.DataFrame,
-    x_col: str,
-    y_col: str,
-    plot_type: str = "auto",
+    x: str,
+    y: str,
+    kind: str = "auto",
     figsize: Tuple[int, int] = (10, 6)
 ) -> plt.Figure:
     """
@@ -69,9 +69,9 @@ def plot_bivariate(
 
     Args:
         df: Input DataFrame
-        x_col: X-axis column name
-        y_col: Y-axis column name
-        plot_type: Type of plot ('scatter', 'box', 'violin', 'auto')
+        x: X-axis column name
+        y: Y-axis column name
+        kind: Type of plot ('scatter', 'box', 'violin', 'auto')
         figsize: Figure size
 
     Returns:
@@ -79,31 +79,32 @@ def plot_bivariate(
     """
     fig, ax = plt.subplots(figsize=figsize)
 
-    if plot_type == "auto":
+    if kind == "auto":
         # Determine plot type based on data types
-        if pd.api.types.is_numeric_dtype(df[x_col]) and pd.api.types.is_numeric_dtype(df[y_col]):
-            plot_type = "scatter"
+        if pd.api.types.is_numeric_dtype(df[x]) and pd.api.types.is_numeric_dtype(df[y]):
+            kind = "scatter"
         else:
-            plot_type = "box"
+            kind = "box"
 
-    if plot_type == "scatter":
-        ax.scatter(df[x_col], df[y_col], alpha=0.5)
-    elif plot_type == "box":
-        df.boxplot(column=y_col, by=x_col, ax=ax)
+    if kind == "scatter":
+        ax.scatter(df[x], df[y], alpha=0.5)
+    elif kind == "box":
+        df.boxplot(column=y, by=x, ax=ax)
         plt.suptitle('')  # Remove default title
-    elif plot_type == "violin":
-        sns.violinplot(data=df, x=x_col, y=y_col, ax=ax)
+    elif kind == "violin":
+        sns.violinplot(data=df, x=x, y=y, ax=ax)
 
-    ax.set_title(f'{y_col} vs {x_col}')
-    ax.set_xlabel(x_col)
-    ax.set_ylabel(y_col)
+    ax.set_title(f'{y} vs {x}')
+    ax.set_xlabel(x)
+    ax.set_ylabel(y)
     plt.tight_layout()
 
     return fig
 
 
 def plot_class_distribution(
-    y: pd.Series,
+    df: pd.DataFrame,
+    col: str,
     title: str = "Class Distribution",
     figsize: Tuple[int, int] = (10, 6)
 ) -> plt.Figure:
@@ -111,20 +112,22 @@ def plot_class_distribution(
     Visualize class distribution with counts and percentages.
 
     Args:
-        y: Target variable
+        df: Input DataFrame
+        col: Target column name
         title: Plot title
         figsize: Figure size
 
     Returns:
         Matplotlib figure
     """
+    y = df[col]
     fig, (ax1, ax2) = plt.subplots(1, 2, figsize=figsize)
 
     # Count plot
     class_counts = y.value_counts()
     class_counts.plot(kind='bar', ax=ax1, color=['skyblue', 'salmon'])
     ax1.set_title(f'{title} - Counts')
-    ax1.set_xlabel('Class')
+    ax1.set_xlabel(col)
     ax1.set_ylabel('Count')
     ax1.set_xticklabels(ax1.get_xticklabels(), rotation=0)
 

@@ -10,8 +10,8 @@ with open("requirements.txt", "r", encoding="utf-8") as fh:
 setup(
     name="fraud-detection",
     version="0.1.0",
-    author="Your Name",
-    author_email="your.email@example.com",
+    author="Eden Moges",
+    author_email="eden.moges@example.com",
     description="Fraud detection system for e-commerce and credit card transactions",
     long_description=long_description,
     long_description_content_type="text/markdown",
