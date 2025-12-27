@@ -1,16 +1,68 @@
-# Don't push data or environments
+# Data directories (keep raw data local)
 data/
+*.csv
+*.parquet
+*.pkl
+
+# Python virtual environments
 .venv/
 venv/
+env/
+ENV/
 
-# Jupyter + python
+# Python cache and compiled files
 __pycache__/
-*.pyc
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# But keep source code
+!src/**/*.py
+!tests/**/*.py
+!scripts/**/*.py
+
+# Jupyter Notebook
 .ipynb_checkpoints/
+*.ipynb_checkpoints
 
-# Models/artifacts
+# Model artifacts and outputs
 models/
+!src/models/
+*.joblib
+*.pkl
+*.h5
+*.pt
+*.pth
 
-# Editor/OS
-.vscode/
+# Testing and coverage
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.hypothesis/
+
+# Distribution / packaging
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# IDEs and editors
+.idea/
+*.swp
+*.swo
+*~
+
+# OS files
 .DS_Store
+Thumbs.db
+desktop.ini
+
+# Logs
+*.log
+logs/
+
+# Environment variables
+.env
+.env.local

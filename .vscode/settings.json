@@ -1,0 +1,53 @@
+{
+    "python.defaultInterpreterPath": "${workspaceFolder}/.venv/Scripts/python.exe",
+    "python.terminal.activateEnvironment": true,
+    
+    // Linting
+    "python.linting.enabled": true,
+    "python.linting.flake8Enabled": true,
+    "python.linting.pylintEnabled": false,
+    "python.linting.flake8Args": [
+        "--max-line-length=100",
+        "--ignore=E203,W503"
+    ],
+    
+    // Formatting
+    "python.formatting.provider": "black",
+    "python.formatting.blackArgs": [
+        "--line-length=100"
+    ],
+    "editor.formatOnSave": true,
+    
+    // Testing
+    "python.testing.pytestEnabled": true,
+    "python.testing.unittestEnabled": false,
+    "python.testing.pytestArgs": [
+        "tests",
+        "-v"
+    ],
+    
+    // Jupyter
+    "jupyter.askForKernelRestart": false,
+    "jupyter.interactiveWindow.textEditor.executeSelection": true,
+    "notebook.output.textLineLimit": 500,
+    
+    // Editor
+    "editor.rulers": [100],
+    "files.trimTrailingWhitespace": true,
+    "files.insertFinalNewline": true,
+    
+    // File associations
+    "files.associations": {
+        "*.md": "markdown"
+    },
+    
+    // Exclude from file watcher
+    "files.watcherExclude": {
+        "**/.git/objects/**": true,
+        "**/.git/subtree-cache/**": true,
+        "**/node_modules/**": true,
+        "**/.venv/**": true,
+        "**/data/**": true,
+        "**/models/**": true
+    }
+}
