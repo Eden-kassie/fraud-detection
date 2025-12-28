@@ -3,7 +3,7 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
-from typing import List, Optional, Tuple, Dict
+from typing import List, Optional, Tuple, Dict, Union
 from sklearn.metrics import confusion_matrix, roc_curve, auc, precision_recall_curve
 from src.utils.logger import logger
 
@@ -114,8 +114,8 @@ def plot_precision_recall_curve(
 
 
 def plot_feature_importance(
+    model_or_importances: Union[np.ndarray, object],
     feature_names: List[str],
-    importances: np.ndarray,
     top_n: int = 20,
     figsize: Tuple[int, int] = (10, 8)
 ) -> plt.Figure:
@@ -123,14 +123,21 @@ def plot_feature_importance(
     Plot feature importance.
 
     Args:
+        model_or_importances: Either a trained model with feature_importances_ attribute,
+                             or an array of importance values
         feature_names: List of feature names
-        importances: Feature importance values
         top_n: Number of top features to display
         figsize: Figure size
 
     Returns:
         Matplotlib figure
     """
+    # Extract importances from model if needed
+    if hasattr(model_or_importances, 'feature_importances_'):
+        importances = model_or_importances.feature_importances_
+    else:
+        importances = model_or_importances
+
     # Create DataFrame and sort
     feat_imp_df = pd.DataFrame({
         'feature': feature_names,
@@ -149,32 +156,52 @@ def plot_feature_importance(
 
 def plot_model_comparison(
     results_df: pd.DataFrame,
-    metric: str = 'auc_pr',
-    figsize: Tuple[int, int] = (12, 6)
+    metrics: Optional[Union[str, List[str]]] = 'auc_pr',
+    figsize: Optional[Tuple[int, int]] = None
 ) -> plt.Figure:
     """
     Compare multiple models side-by-side.
 
     Args:
         results_df: DataFrame with model results (columns: model_name, metrics)
-        metric: Metric to compare
-        figsize: Figure size
+        metrics: Single metric or list of metrics to compare
+        figsize: Figure size (auto-calculated if None)
 
     Returns:
         Matplotlib figure
     """
-    fig, ax = plt.subplots(figsize=figsize)
+    # Handle single metric as string
+    if isinstance(metrics, str):
+        metrics = [metrics]
 
-    if metric in results_df.columns:
-        results_sorted = results_df.sort_values(metric, ascending=False)
-        ax.barh(results_sorted['model_name'], results_sorted[metric])
-        ax.set_xlabel(metric.upper())
-        ax.set_title(f'Model Comparison - {metric.upper()}')
-        ax.invert_yaxis()
+    # Auto-calculate figure size based on number of metrics
+    if figsize is None:
+        n_metrics = len(metrics)
+        figsize = (12, 4 * n_metrics) if n_metrics > 1 else (12, 6)
 
-        # Add value labels
-        for i, v in enumerate(results_sorted[metric]):
-            ax.text(v, i, f' {v:.3f}', va='center')
+    # Create subplots
+    n_metrics = len(metrics)
+    fig, axes = plt.subplots(n_metrics, 1, figsize=figsize)
+
+    # Handle single subplot case
+    if n_metrics == 1:
+        axes = [axes]
+
+    for ax, metric in zip(axes, metrics):
+        if metric in results_df.columns:
+            results_sorted = results_df.sort_values(metric, ascending=False)
+            ax.barh(results_sorted['model_name'], results_sorted[metric])
+            ax.set_xlabel(metric.upper())
+            ax.set_title(f'Model Comparison - {metric.upper()}')
+            ax.invert_yaxis()
+
+            # Add value labels
+            for i, v in enumerate(results_sorted[metric]):
+                ax.text(v, i, f' {v:.3f}', va='center')
+        else:
+            ax.text(0.5, 0.5, f"Metric '{metric}' not found",
+                   ha='center', va='center', transform=ax.transAxes)
+            ax.set_title(f'Model Comparison - {metric.upper()} (Not Found)')
 
     plt.tight_layout()
 

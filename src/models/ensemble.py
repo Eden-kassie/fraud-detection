@@ -48,10 +48,12 @@ class RandomForestModel:
         y_pred_proba = self.predict_proba(X_test)
 
         metrics = calculate_metrics(y_test, y_pred, y_pred_proba)
+        metrics['model_name'] = self.model_name  # Add for comparison
 
         logger.info(f"\n{self.model_name} Metrics:")
         for metric, value in metrics.items():
-            logger.info(f"  {metric}: {value:.4f}")
+            if metric != 'model_name':  # Skip non-numeric
+                logger.info(f"  {metric}: {value:.4f}")
 
         print_classification_report(y_test, y_pred, self.model_name)
 
@@ -100,10 +102,12 @@ class XGBoostModel:
         y_pred_proba = self.predict_proba(X_test)
 
         metrics = calculate_metrics(y_test, y_pred, y_pred_proba)
+        metrics['model_name'] = self.model_name  # Add for comparison
 
         logger.info(f"\n{self.model_name} Metrics:")
         for metric, value in metrics.items():
-            logger.info(f"  {metric}: {value:.4f}")
+            if metric != 'model_name':  # Skip non-numeric
+                logger.info(f"  {metric}: {value:.4f}")
 
         print_classification_report(y_test, y_pred, self.model_name)
 
@@ -152,10 +156,12 @@ class LightGBMModel:
         y_pred_proba = self.predict_proba(X_test)
 
         metrics = calculate_metrics(y_test, y_pred, y_pred_proba)
+        metrics['model_name'] = self.model_name  # Add for comparison
 
         logger.info(f"\n{self.model_name} Metrics:")
         for metric, value in metrics.items():
-            logger.info(f"  {metric}: {value:.4f}")
+            if metric != 'model_name':  # Skip non-numeric
+                logger.info(f"  {metric}: {value:.4f}")
 
         print_classification_report(y_test, y_pred, self.model_name)
 
