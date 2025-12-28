@@ -229,3 +229,48 @@ def plot_fraud_by_country(
     plt.tight_layout()
 
     return fig
+
+
+def plot_country_stats(
+    country_stats: pd.DataFrame,
+    country_col: str = 'country',
+    top_n: int = 15,
+    figsize: Tuple[int, int] = (14, 8)
+) -> plt.Figure:
+    """
+    Visualize pre-aggregated fraud statistics by country.
+
+    This function works with the output from analyze_fraud_by_country().
+
+    Args:
+        country_stats: DataFrame with columns [country, total_transactions, fraud_count, fraud_rate]
+        country_col: Name of country column
+        top_n: Number of top countries to display
+        figsize: Figure size
+
+    Returns:
+        Matplotlib figure
+    """
+    # Get top countries by transaction count
+    top_countries = country_stats.nlargest(top_n, 'total_transactions')
+
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=figsize)
+
+    # Transaction volume by country
+    ax1.barh(top_countries[country_col], top_countries['total_transactions'])
+    ax1.set_xlabel('Total Transactions')
+    ax1.set_title(f'Top {top_n} Countries by Transaction Volume')
+    ax1.invert_yaxis()
+
+    # Fraud rate by country
+    fraud_rate_sorted = top_countries.sort_values('fraud_rate', ascending=False)
+    colors = ['red' if x > 0.1 else 'orange' if x > 0.05 else 'green'
+              for x in fraud_rate_sorted['fraud_rate']]
+    ax2.barh(fraud_rate_sorted[country_col], fraud_rate_sorted['fraud_rate'], color=colors)
+    ax2.set_xlabel('Fraud Rate')
+    ax2.set_title(f'Fraud Rate by Country (Top {top_n})')
+    ax2.invert_yaxis()
+
+    plt.tight_layout()
+
+    return fig

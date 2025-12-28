@@ -55,7 +55,7 @@
                 "    target, \n",
                 "    numeric_cols, \n",
                 "    categorical_cols, \n",
-                "    exclude_cols=drop_cols,  # Fixed: using exclude_cols parameter\n",
+                "    drop_cols=drop_cols,\n",
                 "    apply_smote=False  # No need for SMOTE during interpretation\n",
                 ")"
             ]

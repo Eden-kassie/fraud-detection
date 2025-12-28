@@ -73,11 +73,21 @@ def merge_ip_country(
     )
 
     # Filter to only keep matches within the range
-    if 'upper_bound_ip_address' in df_merged.columns:
-        df_merged = df_merged[
-            (df_merged['ip_int'] >= df_merged['lower_bound_ip_address']) &
-            (df_merged['ip_int'] <= df_merged['upper_bound_ip_address'])
-        ]
+    # Modified filter to preserve valid country matches
+    if 'upper_bound_ip_address' in df_merged.columns and 'lower_bound_ip_address' in df_merged.columns:
+        # Only filter out clear mismatches; keep records with valid country
+        mask = (
+            (df_merged['country'].notna()) &
+            (
+                (df_merged['upper_bound_ip_address'].isna()) |
+                (
+                    (df_merged['ip_int'] >= df_merged['lower_bound_ip_address']) &
+                    (df_merged['ip_int'] <= df_merged['upper_bound_ip_address'])
+                )
+            )
+        )
+        df_merged = df_merged[mask]
+        logger.info(f"After range filtering: {len(df_merged)} records remain")
 
     # Count successful matches
     if 'country' in df_merged.columns:

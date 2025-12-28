@@ -5,6 +5,7 @@ from src.visualization.eda import (
     plot_class_distribution,
     plot_correlation_matrix,
     plot_fraud_by_country,
+    plot_country_stats,
 )
 from src.visualization.model_viz import (
     plot_confusion_matrix,
@@ -21,6 +22,7 @@ __all__ = [
     "plot_class_distribution",
     "plot_correlation_matrix",
     "plot_fraud_by_country",
+    "plot_country_stats",
     # Model visualization
     "plot_confusion_matrix",
     "plot_roc_curve",
