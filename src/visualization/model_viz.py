@@ -206,3 +206,102 @@ def plot_model_comparison(
     plt.tight_layout()
 
     return fig
+
+
+def plot_multi_roc_curve(
+    results_list: List[Dict],
+    X_test: pd.DataFrame,
+    y_test: pd.Series,
+    figsize: Tuple[int, int] = (10, 8)
+) -> plt.Figure:
+    """
+    Plot ROC curves for multiple models on the same axis.
+
+    Args:
+        results_list: List of dictionaries, each containing 'model' and 'model_name'
+        X_test: Test features
+        y_test: True labels
+        figsize: Figure size
+
+    Returns:
+        Matplotlib figure
+    """
+    fig, ax = plt.subplots(figsize=figsize)
+
+    for res in results_list:
+        model = res['model']
+        name = res['model_name']
+
+        if hasattr(model, 'predict_proba'):
+            y_prob = model.predict_proba(X_test)
+            if isinstance(y_prob, np.ndarray) and len(y_prob.shape) > 1 and y_prob.shape[1] > 1:
+                y_prob = y_prob[:, 1]
+        elif hasattr(model, 'predict'):
+            y_prob = model.predict(X_test)
+        else:
+            continue
+
+        fpr, tpr, _ = roc_curve(y_test, y_prob)
+        roc_auc = auc(fpr, tpr)
+        ax.plot(fpr, tpr, lw=2, label=f'{name} (AUC = {roc_auc:.3f})')
+
+    ax.plot([0, 1], [0, 1], color='navy', lw=2, linestyle='--', label='Random')
+    ax.set_xlim([0.0, 1.0])
+    ax.set_ylim([0.0, 1.05])
+    ax.set_xlabel('False Positive Rate')
+    ax.set_ylabel('True Positive Rate')
+    ax.set_title('Multi-Model ROC Comparison')
+    ax.legend(loc="lower right")
+    ax.grid(True, alpha=0.3)
+    plt.tight_layout()
+
+    return fig
+
+
+def plot_multi_pr_curve(
+    results_list: List[Dict],
+    X_test: pd.DataFrame,
+    y_test: pd.Series,
+    figsize: Tuple[int, int] = (10, 8)
+) -> plt.Figure:
+    """
+    Plot Precision-Recall curves for multiple models on the same axis.
+
+    Args:
+        results_list: List of dictionaries, each containing 'model' and 'model_name'
+        X_test: Test features
+        y_test: True labels
+        figsize: Figure size
+
+    Returns:
+        Matplotlib figure
+    """
+    fig, ax = plt.subplots(figsize=figsize)
+
+    for res in results_list:
+        model = res['model']
+        name = res['model_name']
+
+        if hasattr(model, 'predict_proba'):
+            y_prob = model.predict_proba(X_test)
+            if isinstance(y_prob, np.ndarray) and len(y_prob.shape) > 1 and y_prob.shape[1] > 1:
+                y_prob = y_prob[:, 1]
+        elif hasattr(model, 'predict'):
+            y_prob = model.predict(X_test)
+        else:
+            continue
+
+        precision, recall, _ = precision_recall_curve(y_test, y_prob)
+        pr_auc = auc(recall, precision)
+        ax.plot(recall, precision, lw=2, label=f'{name} (AUC-PR = {pr_auc:.3f})')
+
+    ax.set_xlim([0.0, 1.0])
+    ax.set_ylim([0.0, 1.05])
+    ax.set_xlabel('Recall')
+    ax.set_ylabel('Precision')
+    ax.set_title('Multi-Model Precision-Recall Comparison')
+    ax.legend(loc="lower left")
+    ax.grid(True, alpha=0.3)
+    plt.tight_layout()
+
+    return fig
