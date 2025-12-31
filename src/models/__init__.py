@@ -3,6 +3,7 @@ from src.models.data_prep import (
     stratified_train_test_split,
     separate_features_target,
     prepare_model_data,
+    apply_class_imbalance_handling,
 )
 from src.models.evaluation import (
     calculate_metrics,
@@ -30,6 +31,7 @@ __all__ = [
     "stratified_train_test_split",
     "separate_features_target",
     "prepare_model_data",
+    "apply_class_imbalance_handling",
     # Evaluation
     "calculate_metrics",
     "stratified_kfold_cv",

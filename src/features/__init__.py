@@ -6,6 +6,7 @@ from src.features.engineering import (
     create_transaction_velocity,
     create_all_features,
 )
+from src.features.preprocessing import create_preprocessing_pipeline
 from src.features.geolocation import (
     ip_to_integer,
     merge_ip_country,
@@ -20,6 +21,8 @@ __all__ = [
     "create_transaction_frequency",
     "create_transaction_velocity",
     "create_all_features",
+    # Preprocessing
+    "create_preprocessing_pipeline",
     # Geolocation
     "ip_to_integer",
     "merge_ip_country",

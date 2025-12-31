@@ -1,0 +1,34 @@
+2025-12-31 11:12:06 - fraud_detection - INFO - Starting training with args: Namespace(dataset='fraud', output='C:\\Users\\Lenovo\\Documents\\dawir\\Fraud-Detection\\models', cv_folds=5, test_size=0.99, apply_smote=True, scale_strategy='standard')
+2025-12-31 11:12:06 - fraud_detection - INFO - Loading data from C:\Users\Lenovo\Documents\dawir\Fraud-Detection\data\raw\Fraud_Data.csv...
+2025-12-31 11:12:06 - fraud_detection - INFO - Starting comprehensive feature engineering...
+2025-12-31 11:12:07 - fraud_detection - INFO - Created time features from purchase_time
+2025-12-31 11:12:07 - fraud_detection - INFO - Created time_since_signup feature in hours
+2025-12-31 11:12:07 - fraud_detection - INFO - Created transaction velocity features with amount
+2025-12-31 11:12:07 - fraud_detection - INFO - Feature engineering complete. Total features: 24
+2025-12-31 11:12:07 - fraud_detection - INFO - Starting complete data preparation pipeline...
+2025-12-31 11:12:07 - fraud_detection - INFO - Separating features from target 'class'...
+2025-12-31 11:12:07 - fraud_detection - INFO - Features: 23 columns
+2025-12-31 11:12:07 - fraud_detection - INFO - Target: class
+2025-12-31 11:12:07 - fraud_detection - INFO - Total samples: 151112
+2025-12-31 11:12:07 - fraud_detection - INFO - Performing stratified train-test split (test_size=0.99)...
+2025-12-31 11:12:07 - fraud_detection - INFO - Training set: 1511 samples
+2025-12-31 11:12:07 - fraud_detection - INFO - Test set: 149601 samples
+2025-12-31 11:12:07 - fraud_detection - INFO - Train class distribution:
+class
+0    0.906684
+1    0.093316
+Name: proportion, dtype: float64
+2025-12-31 11:12:07 - fraud_detection - INFO - Test class distribution:
+class
+0    0.906351
+1    0.093649
+Name: proportion, dtype: float64
+2025-12-31 11:12:07 - fraud_detection - INFO - Data preparation complete
+2025-12-31 11:12:07 - fraud_detection - INFO - Creating preprocessing pipeline (Scaling: standard, Imputation: median)
+2025-12-31 11:12:07 - fraud_detection - INFO - Fitting preprocessor and transforming data...
+C:\Users\Lenovo\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\sklearn\impute\_base.py:555: UserWarning: Skipping features without any observed values: ['time_since_last_txn' 'avg_time_between_txn']. At least one non-missing value is needed for imputation with strategy='median'.
+  warnings.warn(
+C:\Users\Lenovo\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\sklearn\impute\_base.py:555: UserWarning: Skipping features without any observed values: ['time_since_last_txn' 'avg_time_between_txn']. At least one non-missing value is needed for imputation with strategy='median'.
+  warnings.warn(
+2025-12-31 11:12:08 - fraud_detection - INFO - Applying class imbalance handling (method=smote)...
+2025-12-31 11:12:08 - fraud_detection - INFO - Class distribution before rescaling: {0: 1370, 1: 141}

@@ -1,7 +1,7 @@
 """Model evaluation utilities."""
 import pandas as pd
 import numpy as np
-from typing import Dict, Tuple, Optional
+from typing import Dict, Tuple, Optional, Union
 from sklearn.model_selection import StratifiedKFold, cross_validate
 from sklearn.metrics import (
     accuracy_score,
@@ -127,7 +127,7 @@ def aggregate_cv_results(cv_results: Dict[str, np.ndarray]) -> pd.DataFrame:
     return summary_df
 
 
-def save_model(model: any, model_name: str, output_dir: Optional[Path] = None):
+def save_model(model: any, model_name: str, output_dir: Optional[Union[str, Path]] = None):
     """
     Save trained model to disk.
 
@@ -137,6 +137,9 @@ def save_model(model: any, model_name: str, output_dir: Optional[Path] = None):
         output_dir: Optional custom output directory
     """
     output_path = output_dir or MODELS_DIR
+    if isinstance(output_path, str):
+        output_path = Path(output_path)
+
     output_path.mkdir(parents=True, exist_ok=True)
 
     if not model_name.endswith('.joblib'):

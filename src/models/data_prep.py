@@ -3,6 +3,8 @@ import pandas as pd
 import numpy as np
 from typing import Tuple, Optional, List
 from sklearn.model_selection import train_test_split
+from imblearn.over_sampling import SMOTE
+from imblearn.under_sampling import RandomUnderSampler
 from src.utils.logger import logger
 from src.utils.config import TEST_SIZE, RANDOM_STATE
 
@@ -114,3 +116,47 @@ def prepare_model_data(
     logger.info("Data preparation complete")
 
     return X_train, X_test, y_train, y_test
+
+
+def apply_class_imbalance_handling(
+    X_train: pd.DataFrame,
+    y_train: pd.Series,
+    method: str = 'smote',
+    random_state: int = RANDOM_STATE
+) -> Tuple[pd.DataFrame, pd.Series]:
+    """
+    Apply class imbalance handling to the training set.
+
+    Args:
+        X_train: Training features
+        y_train: Training labels
+        method: Method to use ('smote', 'undersample', or None)
+        random_state: Random state for reproducibility
+
+    Returns:
+        Tuple of (X_resampled, y_resampled)
+    """
+    if method is None or method.lower() == 'none':
+        return X_train, y_train
+
+    logger.info(f"Applying class imbalance handling (method={method})...")
+
+    # Log distribution before
+    before_dist = y_train.value_counts()
+    logger.info(f"Class distribution before rescaling: {before_dist.to_dict()}")
+
+    if method.lower() == 'smote':
+        resampler = SMOTE(random_state=random_state)
+    elif method.lower() == 'undersample':
+        resampler = RandomUnderSampler(random_state=random_state)
+    else:
+        logger.warning(f"Unknown imbalance method '{method}', skipping resampling")
+        return X_train, y_train
+
+    X_resampled, y_resampled = resampler.fit_resample(X_train, y_train)
+
+    # Log distribution after
+    after_dist = y_resampled.value_counts()
+    logger.info(f"Class distribution after rescaling: {after_dist.to_dict()}")
+
+    return X_resampled, y_resampled

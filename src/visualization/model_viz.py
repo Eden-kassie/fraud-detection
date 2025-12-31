@@ -1,6 +1,8 @@
 """Visualization functions for model evaluation."""
 import pandas as pd
 import numpy as np
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import seaborn as sns
 from typing import List, Optional, Tuple, Dict, Union
@@ -302,6 +304,48 @@ def plot_multi_pr_curve(
     ax.set_title('Multi-Model Precision-Recall Comparison')
     ax.legend(loc="lower left")
     ax.grid(True, alpha=0.3)
+    plt.tight_layout()
+
+    return fig
+
+
+def plot_class_distribution(
+    y: Union[pd.Series, np.ndarray],
+    title: str = "Class Distribution",
+    figsize: Tuple[int, int] = (8, 6)
+) -> plt.Figure:
+    """
+    Plot the distribution of classes.
+
+    Args:
+        y: Target variable values
+        title: Title for the plot
+        figsize: Figure size
+
+    Returns:
+        Matplotlib figure
+    """
+    if isinstance(y, np.ndarray):
+        y = pd.Series(y)
+
+    counts = y.value_counts().sort_index()
+    percentages = y.value_counts(normalize=True).sort_index() * 100
+
+    fig, ax = plt.subplots(figsize=figsize)
+    sns.barplot(x=counts.index, y=counts.values, ax=ax, palette='viridis')
+
+    # Add labels
+    for i, count in enumerate(counts):
+        pct = percentages.iloc[i]
+        ax.text(i, count + (max(counts) * 0.01), f'{count}\n({pct:.1f}%)',
+                ha='center', va='bottom', fontweight='bold')
+
+    ax.set_title(title, fontsize=14)
+    ax.set_xlabel('Class', fontsize=12)
+    ax.set_ylabel('Count', fontsize=12)
+    ax.set_xticks(range(len(counts)))
+    ax.set_xticklabels(['Non-Fraud (0)', 'Fraud (1)'])
+
     plt.tight_layout()
 
     return fig
